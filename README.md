@@ -31,4 +31,9 @@ This repository showcases end-to-end **data science projects** across four everg
 
 ## ✅ Progress Log
 - Day 1: Repo setup & baseline MLflow experiment
+### Day 1 — Baseline Experiment
+- RandomForest on Iris with stratified 60/20/20 split.
+- Logged hyperparameters, validation/test metrics, confusion matrix, and model to MLflow.
+- Compared different settings (`n_estimators=200 vs 50`, `max_depth=None vs 4`) to see bias/variance tradeoffs.
+- Learned how to use MLflow UI to track and compare experiments.
 
