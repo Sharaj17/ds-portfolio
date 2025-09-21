@@ -36,4 +36,18 @@ This repository showcases end-to-end **data science projects** across four everg
 - Logged hyperparameters, validation/test metrics, confusion matrix, and model to MLflow.
 - Compared different settings (`n_estimators=200 vs 50`, `max_depth=None vs 4`) to see bias/variance tradeoffs.
 - Learned how to use MLflow UI to track and compare experiments.
+### Day 2 — API & Dockerization
+- Built a FastAPI service (`src/models/predict_api.py`) exposing:
+  - `GET /health` → service status.
+  - `POST /predict` → single prediction.
+  - `POST /predict_batch` → multiple predictions.
+- Validated inputs with **Pydantic models**; Swagger UI auto-generated at `/docs`.
+- Added **pytest tests** (`tests/test_api.py`) to check endpoints with valid/invalid inputs.
+- Solved import path issues with `PYTHONPATH` / `conftest.py`.
+- Dockerized the service:
+  - Created `deployment/Dockerfile` + `.dockerignore`.
+  - Split dependencies (`requirements-api.txt` for container vs `requirements.txt` for dev).
+  - Built and ran container: `docker run -p 8000:8000 ds-portfolio-api`.
+- Verified service works in container (Swagger UI shows `/health` → `{"status": "ok"}`).
+- Documented challenges & fixes (Windows-only packages, virtualization, imports).
 
