@@ -50,4 +50,14 @@ This repository showcases end-to-end **data science projects** across four everg
   - Built and ran container: `docker run -p 8000:8000 ds-portfolio-api`.
 - Verified service works in container (Swagger UI shows `/health` → `{"status": "ok"}`).
 - Documented challenges & fixes (Windows-only packages, virtualization, imports).
+- Day 3: Continuous Integration (CI) with GitHub Actions
+
+### Day 3 — Continuous Integration
+- Added `.github/workflows/ci.yml` to automatically run tests on every push/PR.  
+- Configured GitHub Actions with Python 3.12, installed dependencies, and executed pytest suite.  
+- Fixed cross-platform issues: added `pytest` + `httpx` to requirements, guarded `pywin32` with platform markers.  
+- Made `src` a package (`__init__.py` files) and added `tests/conftest.py` for clean imports.  
+- Committed model artifact (`rf_iris.pkl`) so CI can load it in a fresh VM.  
+- All tests now run in CI — repo shows a ✅ green badge when passing.  
+- Learned how to interpret common CI errors (`exit 127`, `exit 5`, import errors) and fix them.  
 
