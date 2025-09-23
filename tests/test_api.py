@@ -74,3 +74,13 @@ def test_predict_invalid_length():
         payload = {"features": [5.1, 3.5]}  # only 2 features
         r = client.post("/predict", json=payload)
         assert r.status_code == 422
+
+def test_error_handler_returns_json():
+    import os
+    os.environ["ENABLE_TEST_ROUTES"] = "1"
+    with TestClient(app, raise_server_exceptions=False) as client:
+        r = client.get("/_boom")
+        assert r.status_code == 500
+        data = r.json()
+        assert data["error"] == "Internal Server Error"
+        assert "request_id" in data
