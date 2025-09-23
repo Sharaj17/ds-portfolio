@@ -29,16 +29,45 @@ def test_predict_valid():
     with TestClient(app) as client:
         payload = {"features": [5.1, 3.5, 1.4, 0.2]}
         r = client.post("/predict", json=payload)
-
-        # If it fails again, print the body for debugging
-        if r.status_code != 200:
-            print("FAIL BODY:", r.text)
-
         assert r.status_code == 200
         data = r.json()
-        assert "prediction" in data
-        assert data["prediction"] in [0, 1, 2]
 
+        # basic checks
+        assert data["prediction"] in [0, 1, 2]
+        assert data["class_label"] in ["setosa", "versicolor", "virginica"]
+
+        # optional but nice: probabilities sanity
+        if "probs" in data:
+            probs = data["probs"]
+            assert isinstance(probs, list)
+            assert len(probs) == 3
+            # they are probabilities between 0 and 1 and sum ~ 1
+            assert all(0.0 <= p <= 1.0 for p in probs)
+            assert abs(sum(probs) - 1.0) < 1e-6
+
+def test_predict_batch_valid():
+    with TestClient(app) as client:
+        payload = {
+            "batch": [
+                {"features": [5.1, 3.5, 1.4, 0.2]},
+                {"features": [6.2, 3.4, 5.4, 2.3]}
+            ]
+        }
+        r = client.post("/predict_batch", json=payload)
+        assert r.status_code == 200
+        data = r.json()
+
+        assert "predictions" in data and "class_labels" in data
+        assert len(data["predictions"]) == 2
+        assert len(data["class_labels"]) == 2
+        assert set(data["class_labels"]).issubset({"setosa", "versicolor", "virginica"})
+
+        if "probs" in data:
+            assert len(data["probs"]) == 2
+            for row in data["probs"]:
+                assert len(row) == 3
+                assert all(0.0 <= p <= 1.0 for p in row)
+                assert abs(sum(row) - 1.0) < 1e-6
 
 def test_predict_invalid_length():
     with TestClient(app) as client:

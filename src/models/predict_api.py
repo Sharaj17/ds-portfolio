@@ -1,3 +1,4 @@
+from urllib import response
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field, conlist
 from typing import List, Optional
@@ -7,6 +8,10 @@ import pandas as pd
 
 # Optional MLflow loading
 USE_MLFLOW = os.getenv("USE_MLFLOW", "0") == "1"
+
+# Iris class names in the same order the model uses (0,1,2)
+CLASS_LABELS = ["setosa", "versicolor", "virginica"]
+
 
 app = FastAPI(
     title="Iris RF Baseline API",
@@ -20,12 +25,15 @@ class IrisInput(BaseModel):
     # sepal length (cm), sepal width (cm), petal length (cm), petal width (cm)
     #features: List[float] = Field(..., description="Exactly four numeric features in the Iris order.", min_items=4, max_items=4)
     features: conlist(float, min_length=4, max_length=4) = Field(..., description="Exactly four numeric features in the Iris order.")
+
+
 class BatchIrisInput(BaseModel):
     batch: List[IrisInput]
 
 class PredictionOutput(BaseModel):
     prediction: int
-    # You can add probabilities later if you want
+    class_label: str                         # "setosa" | "versicolor" | "virginica"
+    probs: Optional[List[float]] = None      # [p_setosa, p_versicolor, p_virginica]
 
 # ----- Model load -----
 model = None
@@ -78,7 +86,15 @@ def predict(item: IrisInput):
         # If scikit-learn model → same interface
         y_pred = model.predict(X)
         pred = int(y_pred[0])
-        return {"prediction": pred}
+        response = {"prediction": pred, "class_label": CLASS_LABELS[pred]}
+
+        # Add probabilities if the model supports it (RandomForest does)
+        if hasattr(model, "predict_proba"):
+            proba = model.predict_proba(X)[0].tolist()   # e.g., [0.97, 0.03, 0.00]
+            response["probs"] = proba
+
+        return response
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Inference error: {e}")
 
@@ -93,7 +109,14 @@ def predict_batch(items: BatchIrisInput):
 
     try:
         y_pred = model.predict(X)
-        return {"predictions": [int(v) for v in y_pred]}
+        preds = [int(v) for v in y_pred]
+        resp = {
+            "predictions": preds,
+            "class_labels": [CLASS_LABELS[p] for p in preds]
+        }
+        if hasattr(model, "predict_proba"):
+            resp["probs"] = model.predict_proba(X).tolist()  # list of lists
+        return resp
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Inference error: {e}")
 
