@@ -61,3 +61,20 @@ This repository showcases end-to-end **data science projects** across four everg
 - All tests now run in CI — repo shows a ✅ green badge when passing.  
 - Learned how to interpret common CI errors (`exit 127`, `exit 5`, import errors) and fix them.  
 
+### Day 4 and 5 — Logging & Error Handling
+- Added structured logging with Python’s `logging` module.
+- Implemented request logging middleware:
+  - Generates unique `request_id` per request.
+  - Logs start, end, duration, and status code.
+  - Propagates `X-Request-ID` header in responses.
+- Built global exception handler:
+  - Catches all unhandled exceptions.
+  - Logs full stacktrace.
+  - Returns clean JSON error with `request_id`.
+- Added pytest tests:
+  - Validated logging does not break API.
+  - Confirmed JSON error response for failing route (`/_boom`).
+  - Used `raise_server_exceptions=False` for testing error paths.
+- Silenced noisy deprecation warnings with `pytest.ini`.
+- Verified all tests pass locally and in CI.
+- Updated documentation (`MASTER_KEY_EXPANDED.md`) with full detailed knowledge base.
