@@ -1,31 +1,36 @@
-# Data Science Portfolio
+# Data Science Portfolio Framework
 
-This repository showcases end-to-end **data science projects** across four evergreen niches:
-1. Fraud Detection (Finance/Banking)
-2. Cybersecurity Threat Detection
-3. Supply Chain & Logistics Optimization
-4. Grid/Utility Asset Reliability (Energy)
+This repository contains the **end-to-end framework of a production-grade ML system**.  
+We use the classic **Iris classification problem** as a teaching example, but the same setup applies to **real-world projects** (fraud detection, supply chain, energy reliability, etc.).
 
----
-
-## 📅 Programme Timeline
-**4 Weeks | Beginner-friendly | 1h weekdays, 5–8h weekends**
-
-- Week 1: Foundations, Streaming, Anomaly Detection
-- Week 2: Graphs, Cybersecurity ML
-- Week 3: Forecasting & Optimization
-- Week 4: Grid Reliability & Full MLOps
+The goal of this repo is to demonstrate **industry-standard MLOps practices**:
+- Experiment tracking (MLflow)
+- API service (FastAPI + Pydantic)
+- Automated testing (pytest + GitHub Actions CI)
+- Containerization (Docker)
+- Observability (logging, error handling)
+- Deployment (Kubernetes + GHCR)
 
 ---
 
 ## 📂 Repo Structure
-- `docs/` → Setup, weekly logs, references, architecture diagrams
-- `data/` → Small datasets (or references to external data)
-- `notebooks/` → Exploratory notebooks, split by niche
-- `src/` → Reusable code, models, pipelines
-- `experiments/` → MLflow logs & experiment notes
-- `deployment/` → Docker, Kubernetes configs
-- `README.md` → High-level overview, progress log
+- `docs/` → Setup, logs, architecture diagrams
+- `data/` → Datasets (or references)
+- `notebooks/` → Exploration & training
+- `src/` → Reusable API + model code
+- `tests/` → Automated tests
+- `experiments/` → MLflow logs
+- `deployment/` → Dockerfile, Kubernetes manifests
+- `README.md` → This overview + progress log
+
+---
+
+## ✅ Progress Log
+- Day 1: Repo setup & baseline MLflow experiment
+- Day 2: API service + Dockerization
+- Day 3: Continuous Integration with GitHub Actions
+- Day 4–5: Logging & Error Handling
+- Day 6: Kubernetes Deployment with GHCR
 
 ---
 
@@ -78,3 +83,28 @@ This repository showcases end-to-end **data science projects** across four everg
 - Silenced noisy deprecation warnings with `pytest.ini`.
 - Verified all tests pass locally and in CI.
 - Updated documentation (`MASTER_KEY_EXPANDED.md`) with full detailed knowledge base.
+
+### Day 6 — Kubernetes Deployment with GHCR
+- Pushed Docker image to **GHCR** (`ghcr.io/sharaj17/ds-portfolio-framework:latest`).
+- Created **Kubernetes Deployment** with 2 replicas, rolling updates, probes, and resource limits.
+- Added **Service** (NodePort + port-forward) to expose the API.
+- Verified:
+  - `/health` → `{"status":"ok"}`
+  - `/predict` → returned predictions on sample inputs.
+- Practiced:
+  - `kubectl logs`, `kubectl scale`, `kubectl rollout status`, `kubectl rollout undo`.
+
+**Key Learning:**  
+The same system works for any ML project — Iris here is a toy example.  
+Next step: extend this framework with **real-world use cases**.
+
+---
+
+## 🚀 Next Steps
+- Add fraud detection, supply chain optimization, and energy reliability projects into this framework.
+- Each project will have:
+  - Dataset & training notebook
+  - MLflow-tracked experiments
+  - FastAPI endpoints
+  - Tests & CI
+  - Containerized & deployed on Kubernetes
