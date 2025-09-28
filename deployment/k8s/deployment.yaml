@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ds-portfolio-api
+  namespace: ds-portfolio
+  labels:
+    app: ds-portfolio-api
+spec:
+  replicas: 2  # run two copies (pods) for resilience
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: ds-portfolio-api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1        # at most 1 extra pod during update
+      maxUnavailable: 0  # keep all old pods until new ones are ready
+  template:
+    metadata:
+      labels:
+        app: ds-portfolio-api
+    spec:
+      # If your GHCR image is PRIVATE, uncomment the lines below:
+      imagePullSecrets:
+       - name: ghcr-pull-secret
+
+      containers:
+        - name: api
+          image: ghcr.io/sharaj17/ds-portfolio-framework:latest
+
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: USE_MLFLOW
+              value: "0"
+            - name: MODEL_PATH
+              value: "/app/notebooks/models/rf_iris.pkl"
+          resources:
+            requests:
+              cpu: "100m"      # request a small baseline
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: /health    # FastAPI’s health endpoint
+              port: 8000
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
